@@ -11,6 +11,7 @@ export default async function main(req: Request, res: Response) {
   if (key !== "xdfxdf") {
     res.status(403).send("forbidden!");
   }
-  const output = await getRelevantGamesFromForebet();
-  res.status(200).send(output);
+  res.status(200).send("ok");
+  //const output = await getRelevantGamesFromForebet();
+  //res.status(200).send(output);
 }
