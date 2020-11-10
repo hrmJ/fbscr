@@ -12,7 +12,7 @@
     "watch-tsc": "tsc --watch",
     "server": "GOOGLE_APPLICATION_CREDENTIALS=credentials.json functions-framework --target=default",
     "build": "rm -rf build && tsc",
-    "deploy": "gcloud functions deploy scorescrape --runtime nodejs12 --entry-point default --trigger-http --memory=2048MB --timeout=540s",
+    "deploy": "gcloud functions deploy scorescrape --runtime nodejs12 --entry-point default --trigger-http --memory=2048MB --timeout=540s --allow-unauthenticated",
     "release": "npm run build && npm run deploy"
   },
   "keywords": [],

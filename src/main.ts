@@ -7,6 +7,10 @@ import { getRelevantGamesFromForebet } from "./forebet";
  * the deploy script.
  */
 export default async function main(req: Request, res: Response) {
+  const key = req.query("key");
+  if (key !== "xdfxdf") {
+    res.status(403).send("forbidden!");
+  }
   const output = await getRelevantGamesFromForebet();
   res.status(200).send(output);
 }
