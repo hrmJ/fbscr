@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { withBrowser } from "./browser";
 import { getRelevantGamesFromForebet } from "./forebet";
 
 /**
@@ -7,11 +6,10 @@ import { getRelevantGamesFromForebet } from "./forebet";
  * the deploy script.
  */
 export default async function main(req: Request, res: Response) {
-  const key = req.query("key");
-  if (key !== "xdfxdf") {
+  const key = req.query.key;
+  if (key !== process.env.APIKEY) {
     res.status(403).send("forbidden!");
   }
-  res.status(200).send("ok");
-  //const output = await getRelevantGamesFromForebet();
-  //res.status(200).send(output);
+  const output = await getRelevantGamesFromForebet();
+  res.status(200).json(output);
 }
