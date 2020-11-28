@@ -160,17 +160,7 @@ export async function getRelevantGamesFromForebet(
     const output = [] as matchOutput[];
     const temp = [] as any[];
     const links = await driver.findElements(By.css(".tnmscn"));
-    const total = links.length;
-    const firstI = start || 0;
-    const stop = firstI + 100;
-    let i = 0;
     for (const link of links) {
-      if (i > stop) {
-        break;
-      }
-      if (i < firstI) {
-        continue;
-      }
       console.log("adding link data...");
       const parent = await link.findElement(By.xpath("./.."));
       const tr = await parent.findElement(By.xpath("./.."));
@@ -203,9 +193,17 @@ export async function getRelevantGamesFromForebet(
       } else {
         console.log("match filtered based on time " + forebetEventTime);
       }
-      i++;
     }
+    const total = hrefs.length;
+    const firstI = start || 0;
+    const stop = firstI + 100;
     for (let i = 0; i < hrefs.length; i++) {
+      if (i > stop) {
+        break;
+      }
+      if (i < firstI) {
+        continue;
+      }
       console.log(`Loading detail page ${i}`);
       await driver.get(hrefs[i]);
       const tableLocator = By.id("1x2_table");

@@ -7,10 +7,11 @@ import { getRelevantGamesFromForebet } from "./forebet";
  */
 export default async function main(req: Request, res: Response) {
   const key = req.query.key;
-  const start: number = parseInt(req.query.key);
+  const start: number = parseInt(req.query.start);
   if (key !== process.env.APIKEY) {
     res.status(403).send("forbidden!");
   }
+  console.log(start);
   const json = await getRelevantGamesFromForebet(start);
   res.status(200).json(json);
 }
