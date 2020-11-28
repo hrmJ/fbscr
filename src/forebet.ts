@@ -140,9 +140,18 @@ const scrapeH2hTable = async (table: WebElement): Promise<matchOutput> => {
   }
 };
 
-export async function getRelevantGamesFromForebet() {
+type relevantGamesOutput = {
+  output: matchOutput[] | null;
+  stop: number;
+  total: number;
+};
+
+export async function getRelevantGamesFromForebet(
+  start: number
+): Promise<relevantGamesOutput> {
   const driver = getDriver();
   const hrefs = [] as string[];
+  let ret = { stop: 0, output: null, total: 0 };
   try {
     await driver.get("https://www.forebet.com/en/value-bets#");
     console.log("loaded landing page");
@@ -151,7 +160,17 @@ export async function getRelevantGamesFromForebet() {
     const output = [] as matchOutput[];
     const temp = [] as any[];
     const links = await driver.findElements(By.css(".tnmscn"));
+    const total = links.length;
+    const firstI = start || 0;
+    const stop = firstI + 100;
+    let i = 0;
     for (const link of links) {
+      if (i > stop) {
+        break;
+      }
+      if (i < firstI) {
+        continue;
+      }
       console.log("adding link data...");
       const parent = await link.findElement(By.xpath("./.."));
       const tr = await parent.findElement(By.xpath("./.."));
@@ -184,6 +203,7 @@ export async function getRelevantGamesFromForebet() {
       } else {
         console.log("match filtered based on time " + forebetEventTime);
       }
+      i++;
     }
     for (let i = 0; i < hrefs.length; i++) {
       console.log(`Loading detail page ${i}`);
@@ -196,10 +216,11 @@ export async function getRelevantGamesFromForebet() {
       output.push(data);
     }
     output.sort((a, b) => b.value - a.value);
-    return output;
+    ret = { stop, output, total };
   } finally {
     await driver.quit();
   }
+  return ret;
 }
 
 //getRelevantGamesFromForebet(true, false);
