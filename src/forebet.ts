@@ -26,7 +26,10 @@ export const scrapeCols = [
   { forebet: "forebet" },
   { exScore: "exScore" },
   { avg: "avg" },
-  { odd: "odd" },
+  { tipOdd: "tip odd" },
+  { H: "H" },
+  { X: "X" },
+  { A: "A" },
   { kelly: "kelly" },
   { label: "Match status", value: "matchStatus" },
   { label: "Home team / last match", value: "homeLastMatch" },
@@ -80,7 +83,10 @@ type matchOutput = {
   forebet: string;
   exScore: string;
   avg: string;
-  odd: string;
+  tipOdd: string;
+  H: string;
+  X: string;
+  A: string;
   kelly: string;
   value: number;
   forebetEventTime: string;
@@ -103,7 +109,16 @@ const scrapeH2hTable = async (table: WebElement): Promise<matchOutput> => {
     const odd = $(".odd", tr);
     const kelly = $(".kellyTab", tr);
     const forebetEventTime = $(".date_bah", tr).text();
-
+    let tipOdd = "";
+    let H = "";
+    let X = "";
+    let A = "";
+    try {
+      [tipOdd, H, X, A] = odd
+        .text()
+        .split("\n")
+        .filter((t: string) => t && !["1", "-1"].includes(t));
+    } catch (err) {}
     return {
       homeTeam: homeTeam ? $(".homeTeam", tr).first().text() : "",
       awayTeam: awayTeam ? $(".awayTeam", tr).first().text() : "",
@@ -113,8 +128,11 @@ const scrapeH2hTable = async (table: WebElement): Promise<matchOutput> => {
       forebet: forebet ? $(".forepr", tr).first().text() : "",
       exScore: exScore ? $(".ex_sc", tr).first().text() : "",
       avg: avg ? $(".avg_sc", tr).first().text() : "",
-      odd: odd ? $(".odd", tr).first().text() : "",
       kelly: kelly ? $(".kellyTab", tr).first().text() : "",
+      tipOdd,
+      H,
+      X,
+      A,
       forebetEventTime: forebetEventTime ? $(".date_bah", tr).text() : "",
       country: "",
       league: "",
@@ -130,7 +148,10 @@ const scrapeH2hTable = async (table: WebElement): Promise<matchOutput> => {
       forebet: "",
       exScore: "",
       avg: "",
-      odd: "",
+      tipOdd: "",
+      H: "",
+      X: "",
+      A: "",
       kelly: "",
       forebetEventTime: "",
       country: "",
