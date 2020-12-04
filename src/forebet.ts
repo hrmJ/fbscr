@@ -197,7 +197,9 @@ export async function getRelevantGamesFromForebet(
         console.log("No league and country!", await div.getText());
         continue;
       }
-      const [country, league] = (raw.match(re) || ["", "", ""])
+      const [country, league] = (
+        raw.replace("''", " ").match(re) || ["", "", ""]
+      )
         .filter((_, i) => i < 2)
         .map((m) => m.replace(/^'(.*)'$/, "$1"));
       const href = await link.getAttribute("href");
