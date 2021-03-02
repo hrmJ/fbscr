@@ -198,6 +198,36 @@ type relevantGamesOutput = {
   total: number;
 };
 
+async function clickMore(driver: ThenableWebDriver) {
+  const moreLinkLocator = By.css("#mrows span");
+  driver.wait(until.elementLocated(moreLinkLocator));
+  console.log("searched for morelink");
+  try {
+    const moreLink = await driver.findElement(moreLinkLocator);
+    driver.wait(until.elementLocated(moreLinkLocator));
+    const actions = driver.actions({ async: true });
+    await actions.move({ origin: moreLink }).perform();
+    await moreLink.click();
+    console.log("clicked");
+    await driver.sleep(4000);
+  } catch (err) {
+    console.log("no morelink found", err);
+  }
+}
+
+async function consentToCookies(driver: ThenableWebDriver) {
+  const consentLinkLocator = By.css("#close-cc-bar");
+  try {
+    console.log("Clicking OK to cookies");
+    await driver.wait(until.elementLocated(consentLinkLocator));
+    const link = await driver.findElement(consentLinkLocator);
+    await link.click();
+    console.log("clicked ok");
+  } catch (error) {
+    console.log("Unable to click ok to cookies popup: ", error);
+  }
+}
+
 export async function getRelevantGamesFromForebet(
   start: number,
   addr: string = ""
@@ -211,24 +241,14 @@ export async function getRelevantGamesFromForebet(
         "https://www.forebet.com/en/football-tips-and-predictions-for-today"
     );
     console.log("loaded landing page");
+    await consentToCookies(driver);
     const tableLocator = By.css(".schema.tblen");
     driver.wait(until.elementLocated(tableLocator));
     const output = [] as matchOutput[];
     const temp = [] as any[];
-    const moreLinkLocator = By.css("#mrows span");
-    const moreLink = await driver.findElement(moreLinkLocator);
-    driver.wait(until.elementLocated(moreLinkLocator));
-    if (moreLink) {
-      try {
-        await moreLink.click();
-        await driver.sleep(10);
-      } catch (err) {
-        await driver.executeScript('ltodrows("1x2","1","","0")');
-        await driver.sleep(10);
-        console.log('Unable to click "more"');
-      }
-    }
+    await clickMore(driver);
     const links = await driver.findElements(By.css(".tnmscn"));
+    console.log(`total no of links: ${links.length}`);
     let i = 0;
     for (const link of links) {
       i++;
