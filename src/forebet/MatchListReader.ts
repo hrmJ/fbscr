@@ -1,0 +1,116 @@
+import { ThenableWebDriver, By, until, WebElement } from "selenium-webdriver";
+const moment = require("moment");
+
+type matchLink = {
+  href: string;
+  time: string;
+};
+
+export default class MatchListReader {
+  private driver: ThenableWebDriver;
+
+  private hrefs: string[];
+
+  private start: number;
+
+  private stop: number;
+
+  private total: number;
+
+  constructor(driver: ThenableWebDriver, start: number = 0) {
+    this.driver = driver;
+    this.start = start;
+    this.stop = start + 100;
+  }
+
+  async openList(addr: string = "") {
+    await this.driver.get(
+      addr ||
+        "https://www.forebet.com/en/football-tips-and-predictions-for-today"
+    );
+  }
+
+  async consentToCookies() {
+    const consentLinkLocator = By.css("#close-cc-bar");
+    try {
+      console.log("Clicking OK to cookies");
+      await this.driver.wait(until.elementLocated(consentLinkLocator));
+      const link = await this.driver.findElement(consentLinkLocator);
+      await link.click();
+      console.log("clicked ok");
+    } catch (error) {
+      console.log("Unable to click ok to cookies popup: ", error);
+    }
+  }
+
+  async clickMore() {
+    const moreLinkLocator = By.css("#mrows span");
+    try {
+      await this.driver.wait(until.elementLocated(moreLinkLocator), 7000);
+    } catch (err) {}
+    console.log("searched for morelink");
+    try {
+      const moreLink = await this.driver.findElement(moreLinkLocator);
+      try {
+        await this.driver.wait(until.elementLocated(moreLinkLocator), 7000);
+      } catch (err) {}
+      const actions = this.driver.actions({ async: true });
+      await actions.move({ origin: moreLink }).perform();
+      await moreLink.click();
+      console.log("clicked");
+      await this.driver.sleep(4000);
+    } catch (err) {
+      console.log("no morelink found");
+    }
+  }
+
+  private async listLinksAndDates(): Promise<matchLink[]> {
+    console.log("Listing all available matches");
+    const links = await this.driver.findElements(By.css(".tnmscn"));
+    this.total = links.length;
+    console.log(`found ${this.total}`);
+    return await Promise.all(
+      links.map(
+        async (link: WebElement): Promise<matchLink> => {
+          const parent = await link.findElement(By.xpath("./../.."));
+          const dateCont = await parent.findElement(By.css(".date_bah"));
+          const time = await dateCont.getText();
+          const href = await link.getAttribute("href");
+          return { time, href };
+        }
+      )
+    );
+  }
+
+  private async setHrefs(links: matchLink[]) {
+    this.hrefs = links
+      .filter(
+        (link, idx) =>
+          idx < this.stop &&
+          idx > this.start &&
+          moment(link.time, "D/M/Y h:m").diff(
+            moment().add(1, "day").startOf("day").add(11, "hours")
+          ) < 0
+      )
+      .map((link) => link.href);
+    console.log(`${this.hrefs.length} events fall into the expected time span`);
+  }
+
+  async compileLinkList() {
+    const links = await this.listLinksAndDates();
+    this.setHrefs(links);
+  }
+
+  getLinks(): string[] {
+    return this.hrefs;
+  }
+
+  getTotal(): number {
+    return this.total;
+  }
+
+  getStop(): number {
+    return this.stop;
+  }
+}
+
