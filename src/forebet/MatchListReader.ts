@@ -17,10 +17,17 @@ export default class MatchListReader {
 
   private total: number;
 
-  constructor(driver: ThenableWebDriver, start: number = 0) {
+  constructor(
+    driver: ThenableWebDriver,
+    start: number = 0,
+    noStop: boolean = false
+  ) {
     this.driver = driver;
     this.start = start;
     this.stop = start + 100;
+    if (noStop) {
+      this.stop = 999999;
+    }
   }
 
   async openList(addr: string = "") {

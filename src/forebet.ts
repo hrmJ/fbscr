@@ -55,13 +55,14 @@ type relevantGamesOutput = {
 
 export async function getRelevantGamesFromForebet(
   start: number,
-  addr: string = ""
+  addr: string = "",
+  noStop: boolean = false
 ): Promise<relevantGamesOutput> {
   const driver = getDriver();
   const ret: relevantGamesOutput = { stop: 0, total: 0, output: [] };
   const output: matchOutput[] = [];
   try {
-    const matchListReader = new MatchListReader(driver, start);
+    const matchListReader = new MatchListReader(driver, start, noStop);
     await matchListReader.openList(addr);
     await matchListReader.consentToCookies();
     await matchListReader.clickMore();
@@ -81,7 +82,6 @@ export async function getRelevantGamesFromForebet(
     ret.output = output;
   } finally {
     try {
-      console.log("quitting");
       await driver.quit();
     } catch (err) {}
   }

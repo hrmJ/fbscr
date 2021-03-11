@@ -8,6 +8,7 @@ export type matchOutput = {
   pred2: string;
   forebet: string;
   exScore: string;
+  score: string;
   avg: string;
   tipOdd: string;
   H: string;
@@ -37,6 +38,7 @@ export default class DetailScraper {
     pred2: "",
     forebet: "",
     exScore: "",
+    score: "",
     avg: "",
     tipOdd: "",
     H: "",
@@ -144,6 +146,7 @@ export default class DetailScraper {
     await this.get1x2Props();
     this.data.forebet = await this.getElementText(".tr_0 .forepr");
     this.data.exScore = await this.getElementText(".tr_0 .ex_sc");
+    this.data.score = await this.getElementText(".tr_0 .l_scr");
     this.data.avg = await this.getElementText(".tr_0 .avg_sc");
     await this.getOdds();
   }
