@@ -48,7 +48,7 @@ const getDriver = (): ThenableWebDriver => {
 };
 
 type relevantGamesOutput = {
-  output: matchOutput[] | null;
+  output: matchOutput[];
   stop: number;
   total: number;
 };

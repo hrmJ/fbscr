@@ -1,16 +1,28 @@
 import { getRelevantGamesFromForebet } from "./forebet";
 import { writeFileSync } from "fs";
+import { matchOutput } from "./forebet/DetailScraper";
+import { Moment } from "moment";
+const moment = require("moment");
 
 (async () => {
   const startDate = process.argv[2];
-  const daysToMove = process.argv[3];
-  console.log(startDate, daysToMove);
-  //const output = await getRelevantGamesFromForebet(
-  //  99,
-  //  "https://www.forebet.com/en/football-predictions/predictions-1x2/2021-03-09",
-  //  true
-  //);
-  //console.log(output);
-  //writeFileSync("scraped_offline.json", JSON.stringify(output.output));
+  const daysToMove = Number(process.argv[3]);
+  let currentDay: Moment = moment(startDate);
+  let output: matchOutput[] = [];
+  for (let i = 0; i < daysToMove; i++) {
+    const address = `https://www.forebet.com/en/football-predictions/predictions-1x2/${currentDay.format(
+      "Y-MM-DD"
+    )}`;
+    console.log(address);
+    const res = await getRelevantGamesFromForebet(0, address, true);
+    output = [...output, ...res.output];
+    currentDay = currentDay.subtract(1, "days");
+  }
+
+  console.log(output);
+  writeFileSync(
+    `forebet_${startDate}__${currentDay.format("Y-MM-DD")}.json`,
+    JSON.stringify(output)
+  );
 })();
 
