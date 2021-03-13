@@ -128,11 +128,18 @@ export default class DetailScraper {
 
   async getOdds() {
     const tipOdd = await this.getElementText(".tr_0 .lscrsp");
-    const oddsCont = await this.driver.findElement(By.css(".tr_0 .haodd"));
-    const oddsText = await oddsCont.getAttribute("innerText");
-    const [H, X, A] = oddsText
-      .split("\n")
-      .filter((t: string) => t && !["1", "-1"].includes(t));
+    let H = "",
+      X = "",
+      A = "";
+    try {
+      const oddsCont = await this.driver.findElement(By.css(".tr_0 .haodd"));
+      const oddsText = await oddsCont.getAttribute("innerText");
+      [H, X, A] = oddsText
+        .split("\n")
+        .filter((t: string) => t && !["1", "-1"].includes(t));
+    } catch (err) {
+      console.log("unable to get odds");
+    }
     this.data = { ...this.data, tipOdd, H, X, A };
   }
 
@@ -145,6 +152,7 @@ export default class DetailScraper {
     await this.getTeams();
     await this.get1x2Props();
     this.data.forebet = await this.getElementText(".tr_0 .forepr");
+    this.data.forebetEventTime = await this.getElementText(".date_bah");
     this.data.exScore = await this.getElementText(".tr_0 .ex_sc");
     this.data.score = await this.getElementText(".tr_0 .l_scr");
     this.data.avg = await this.getElementText(".tr_0 .avg_sc");

@@ -20,7 +20,7 @@ const moment = require("moment");
     for (let i = 0; i < daysToMove; i++) {
         const address = `https://www.forebet.com/en/football-predictions/predictions-1x2/${currentDay.format("Y-MM-DD")}`;
         console.log(address);
-        const res = yield forebet_1.getRelevantGamesFromForebet(90, address, false);
+        const res = yield forebet_1.getRelevantGamesFromForebet(0, address, true);
         output = [...output, ...res.output];
         currentDay = currentDay.subtract(1, "days");
     }

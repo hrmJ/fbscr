@@ -129,6 +129,7 @@ class DetailScraper {
             yield this.getTeams();
             yield this.get1x2Props();
             this.data.forebet = yield this.getElementText(".tr_0 .forepr");
+            this.data.forebetEventTime = yield this.getElementText(".date_bah");
             this.data.exScore = yield this.getElementText(".tr_0 .ex_sc");
             this.data.score = yield this.getElementText(".tr_0 .l_scr");
             this.data.avg = yield this.getElementText(".tr_0 .avg_sc");
