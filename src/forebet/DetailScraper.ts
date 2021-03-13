@@ -73,10 +73,10 @@ export default class DetailScraper {
   }
 
   private async openTab(selector: string): Promise<boolean> {
-    const link = !selector.match(/#\d/)
-      ? await this.driver.findElement(By.css(selector))
-      : await this.driver.findElement(By.id(selector.replace("#", "")));
     try {
+      const link = !selector.match(/#\d/)
+        ? await this.driver.findElement(By.css(selector))
+        : await this.driver.findElement(By.id(selector.replace("#", "")));
       await link.click();
       return true;
     } catch (err) {

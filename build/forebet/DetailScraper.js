@@ -51,10 +51,10 @@ class DetailScraper {
     }
     openTab(selector) {
         return __awaiter(this, void 0, void 0, function* () {
-            const link = !selector.match(/#\d/)
-                ? yield this.driver.findElement(selenium_webdriver_1.By.css(selector))
-                : yield this.driver.findElement(selenium_webdriver_1.By.id(selector.replace("#", "")));
             try {
+                const link = !selector.match(/#\d/)
+                    ? yield this.driver.findElement(selenium_webdriver_1.By.css(selector))
+                    : yield this.driver.findElement(selenium_webdriver_1.By.id(selector.replace("#", "")));
                 yield link.click();
                 return true;
             }
