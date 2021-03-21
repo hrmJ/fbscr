@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const forebet_1 = require("./forebet");
 const fs_1 = require("fs");
 const moment = require("moment");
-(() => __awaiter(void 0, void 0, void 0, function* () {
+const scrapePast = () => __awaiter(void 0, void 0, void 0, function* () {
     const startDate = process.argv[2];
     const daysToMove = Number(process.argv[3]);
     let currentDay = moment(startDate);
@@ -26,5 +26,16 @@ const moment = require("moment");
     }
     console.log(output);
     fs_1.writeFileSync(`forebet_${startDate}__${currentDay.format("Y-MM-DD")}.json`, JSON.stringify(output));
+});
+const scrapeFuture = () => __awaiter(void 0, void 0, void 0, function* () {
+    const address = `https://www.forebet.com/en/football-tips-and-predictions-for-today`;
+    const res = yield forebet_1.getRelevantGamesFromForebet(0, address, true);
+    fs_1.writeFileSync(`today.json`, JSON.stringify(res.output));
+});
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    if (process.argv.length > 3) {
+        scrapePast();
+    }
+    scrapeFuture();
 }))();
 //# sourceMappingURL=run.js.map

@@ -4,7 +4,7 @@ import { matchOutput } from "./forebet/DetailScraper";
 import { Moment } from "moment";
 const moment = require("moment");
 
-(async () => {
+const scrapePast = async () => {
   const startDate = process.argv[2];
   const daysToMove = Number(process.argv[3]);
   let currentDay: Moment = moment(startDate);
@@ -24,5 +24,19 @@ const moment = require("moment");
     `forebet_${startDate}__${currentDay.format("Y-MM-DD")}.json`,
     JSON.stringify(output)
   );
+};
+
+const scrapeFuture = async () => {
+  const address = `https://www.forebet.com/en/football-tips-and-predictions-for-today`;
+  const res = await getRelevantGamesFromForebet(0, address, true);
+  //const today = moment().format("Y-MM-DD");
+  writeFileSync(`today.json`, JSON.stringify(res.output));
+};
+
+(async () => {
+  if (process.argv.length > 3) {
+    scrapePast();
+  }
+  scrapeFuture();
 })();
 
