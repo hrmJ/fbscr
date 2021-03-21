@@ -78,11 +78,16 @@ export default class MatchListReader {
     console.log(`found ${this.total}`);
     return await Promise.all(
       links.map(
-        async (link: WebElement): Promise<matchLink> => {
+        async (link: WebElement, idx): Promise<matchLink> => {
           const parent = await link.findElement(By.xpath("./../.."));
+          console.log("parent ok");
           const dateCont = await parent.findElement(By.css(".date_bah"));
+          console.log("datcont ok");
           const time = await dateCont.getText();
+          console.log("time ok");
           const href = await link.getAttribute("href");
+          console.log("href ok");
+          console.log(idx);
           return { time, href };
         }
       )

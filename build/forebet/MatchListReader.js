@@ -72,11 +72,16 @@ class MatchListReader {
             const links = yield this.driver.findElements(selenium_webdriver_1.By.css(".tnmscn"));
             this.total = links.length;
             console.log(`found ${this.total}`);
-            return yield Promise.all(links.map((link) => __awaiter(this, void 0, void 0, function* () {
+            return yield Promise.all(links.map((link, idx) => __awaiter(this, void 0, void 0, function* () {
                 const parent = yield link.findElement(selenium_webdriver_1.By.xpath("./../.."));
+                console.log("parent ok");
                 const dateCont = yield parent.findElement(selenium_webdriver_1.By.css(".date_bah"));
+                console.log("datcont ok");
                 const time = yield dateCont.getText();
+                console.log("time ok");
                 const href = yield link.getAttribute("href");
+                console.log("href ok");
+                console.log(idx);
                 return { time, href };
             })));
         });

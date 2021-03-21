@@ -20,7 +20,7 @@ const scrapeDays = () => __awaiter(void 0, void 0, void 0, function* () {
     for (let i = 0; i < Math.abs(daysToMove); i++) {
         const address = `https://www.forebet.com/en/football-predictions/predictions-1x2/${currentDay.format("Y-MM-DD")}`;
         console.log(address);
-        const res = yield forebet_1.getRelevantGamesFromForebet(0, address, false);
+        const res = yield forebet_1.getRelevantGamesFromForebet(0, address, true);
         output = [...output, ...res.output];
         currentDay =
             daysToMove < 0

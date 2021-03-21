@@ -14,7 +14,7 @@ const scrapeDays = async () => {
       "Y-MM-DD"
     )}`;
     console.log(address);
-    const res = await getRelevantGamesFromForebet(0, address, false);
+    const res = await getRelevantGamesFromForebet(0, address, true);
     output = [...output, ...res.output];
     currentDay =
       daysToMove < 0
