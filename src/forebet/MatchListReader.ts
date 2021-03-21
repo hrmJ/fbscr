@@ -24,7 +24,7 @@ export default class MatchListReader {
   ) {
     this.driver = driver;
     this.start = start;
-    this.stop = start + 100;
+    this.stop = 3;
     if (noStop) {
       this.stop = 999999;
     }
@@ -91,16 +91,9 @@ export default class MatchListReader {
 
   private async setHrefs(links: matchLink[]) {
     this.hrefs = links
-      .filter(
-        (link, idx) =>
-          idx < this.stop &&
-          idx > this.start &&
-          moment(link.time, "D/M/Y h:m").diff(
-            moment().add(1, "day").startOf("day").add(11, "hours")
-          ) < 0
-      )
+      .filter((_, idx) => idx < this.stop && idx > this.start)
       .map((link) => link.href);
-    console.log(`${this.hrefs.length} events fall into the expected time span`);
+    console.log(`${this.hrefs.length} matches to scrape`);
   }
 
   async compileLinkList() {
