@@ -15,7 +15,7 @@ class MatchListReader {
     constructor(driver, start = 0, noStop = false) {
         this.driver = driver;
         this.start = start;
-        this.stop = 3;
+        this.stop = start + 100;
         if (noStop) {
             this.stop = 999999;
         }
