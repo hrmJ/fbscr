@@ -164,7 +164,9 @@ export default class DetailScraper {
     if (!(await this.openTab("#uo_t_butt"))) {
       return null;
     }
-    this.data.propinUnder = await this.getElementText("#uo_table .tr_0 .fpr");
+    this.data.propinUnder = await this.getElementText(
+      "#uo_table .tr_0 .fpr > span:first-child"
+    );
     this.data.propinOver = await this.getElementText(
       "#uo_table .tr_0 .fprc > span:last-child"
     );
