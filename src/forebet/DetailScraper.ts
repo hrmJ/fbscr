@@ -183,7 +183,9 @@ export default class DetailScraper {
     if (!(await this.openTab("#bts_t_butt"))) {
       return null;
     }
-    this.data.btsNo = await this.getElementText("#bts_table .tr_0 .fpr");
+    this.data.btsNo = await this.getElementText(
+      "#bts_table .tr_0 .fprc > span:first-child"
+    );
     this.data.btsYes = await this.getElementText(
       "#bts_table .tr_0 .fprc > span:last-child"
     );
