@@ -142,7 +142,7 @@ class DetailScraper {
             if (!(yield this.openTab("#uo_t_butt"))) {
                 return null;
             }
-            this.data.propinUnder = yield this.getElementText("#uo_table .tr_0 .fpr > span:first-child");
+            this.data.propinUnder = yield this.getElementText("#uo_table .tr_0 .fprc > span:first-child");
             this.data.propinOver = yield this.getElementText("#uo_table .tr_0 .fprc > span:last-child");
             this.data.forPredicUO = yield this.getElementText("#uo_table .tr_0 .predict");
             this.data.forUoOdds = yield this.getElementText("#uo_table .tr_0 > .bigOnly");

@@ -165,7 +165,7 @@ export default class DetailScraper {
       return null;
     }
     this.data.propinUnder = await this.getElementText(
-      "#uo_table .tr_0 .fpr > span:first-child"
+      "#uo_table .tr_0 .fprc > span:first-child"
     );
     this.data.propinOver = await this.getElementText(
       "#uo_table .tr_0 .fprc > span:last-child"
@@ -194,4 +194,3 @@ export default class DetailScraper {
     return this.data;
   }
 }
-
