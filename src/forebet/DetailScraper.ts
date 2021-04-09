@@ -9,6 +9,7 @@ export type matchOutput = {
   forebet: string;
   exScore: string;
   score: string;
+  htScore: string;
   avg: string;
   tipOdd: string;
   H: string;
@@ -39,6 +40,7 @@ export default class DetailScraper {
     forebet: "",
     exScore: "",
     score: "",
+    htScore: "",
     avg: "",
     tipOdd: "",
     H: "",
@@ -155,6 +157,10 @@ export default class DetailScraper {
     this.data.forebetEventTime = await this.getElementText(".date_bah");
     this.data.exScore = await this.getElementText(".tr_0 .ex_sc");
     this.data.score = await this.getElementText(".tr_0 .l_scr");
+    this.data.htScore = await this.getElementText(".ht_scr");
+    if (this.data.htScore) {
+      this.data.htScore = this.data.htScore.replace(/[()]/g, "");
+    }
     this.data.avg = await this.getElementText(".tr_0 .avg_sc");
     await this.getOdds();
   }

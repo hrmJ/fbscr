@@ -22,6 +22,7 @@ class DetailScraper {
             forebet: "",
             exScore: "",
             score: "",
+            htScore: "",
             avg: "",
             tipOdd: "",
             H: "",
@@ -132,6 +133,10 @@ class DetailScraper {
             this.data.forebetEventTime = yield this.getElementText(".date_bah");
             this.data.exScore = yield this.getElementText(".tr_0 .ex_sc");
             this.data.score = yield this.getElementText(".tr_0 .l_scr");
+            this.data.htScore = yield this.getElementText(".ht_scr");
+            if (this.data.htScore) {
+                this.data.htScore = this.data.htScore.replace(/[()]/g, "");
+            }
             this.data.avg = yield this.getElementText(".tr_0 .avg_sc");
             yield this.getOdds();
         });
