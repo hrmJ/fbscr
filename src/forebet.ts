@@ -56,13 +56,19 @@ type relevantGamesOutput = {
 export async function getRelevantGamesFromForebet(
   start: number,
   addr: string = "",
-  noStop: boolean = false
+  noStop: boolean = false,
+  leagueView = false
 ): Promise<relevantGamesOutput> {
   const driver = getDriver();
   const ret: relevantGamesOutput = { stop: 0, total: 0, output: [] };
   const output: matchOutput[] = [];
   try {
-    const matchListReader = new MatchListReader(driver, start, noStop);
+    const matchListReader = new MatchListReader(
+      driver,
+      start,
+      noStop,
+      leagueView
+    );
     await matchListReader.openList(addr);
     await matchListReader.consentToCookies();
     await matchListReader.clickMore();
@@ -87,4 +93,3 @@ export async function getRelevantGamesFromForebet(
   }
   return ret;
 }
-

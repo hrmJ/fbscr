@@ -17,14 +17,18 @@ export default class MatchListReader {
 
   private total: number;
 
+  private leagueView: boolean;
+
   constructor(
     driver: ThenableWebDriver,
     start: number = 0,
-    noStop: boolean = false
+    noStop: boolean = false,
+    leagueView: boolean = false
   ) {
     this.driver = driver;
     this.start = start;
     this.stop = start + 100;
+    this.leagueView = leagueView;
     if (noStop) {
       this.stop = 999999;
     }
@@ -73,24 +77,27 @@ export default class MatchListReader {
 
   private async listLinksAndDates(): Promise<matchLink[]> {
     console.log("Listing all available matches");
-    const links = await this.driver.findElements(By.css(".tnmscn"));
+    const selector = this.leagueView ? ".stat_link" : ".tnmscn";
+    const links = await this.driver.findElements(By.css(selector));
     this.total = links.length;
     console.log(`found ${this.total}`);
     return await Promise.all(
-      links.map(
-        async (link: WebElement, idx): Promise<matchLink> => {
-          const parent = await link.findElement(By.xpath("./../.."));
-          console.log("parent ok");
-          const dateCont = await parent.findElement(By.css(".date_bah"));
-          console.log("datcont ok");
-          const time = await dateCont.getText();
-          console.log("time ok");
-          const href = await link.getAttribute("href");
-          console.log("href ok");
-          console.log(idx);
-          return { time, href };
-        }
-      )
+      links.map(async (link: WebElement, idx): Promise<matchLink> => {
+        const parent = await link.findElement(By.xpath("./../.."));
+        console.log("parent ok");
+        const dateCont = this.leagueView
+          ? await parent.findElement(
+              By.xpath("preceding-sibling::*[1][self::tr]")
+            )
+          : await parent.findElement(By.css(".date_bah"));
+        console.log("datcont ok");
+        const time = await dateCont.getText();
+        console.log("time ok", time);
+        const href = await link.getAttribute("href");
+        console.log("href ok", href);
+        console.log(idx);
+        return { time, href };
+      })
     );
   }
 
@@ -118,4 +125,3 @@ export default class MatchListReader {
     return this.stop;
   }
 }
-

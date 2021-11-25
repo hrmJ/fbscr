@@ -62,13 +62,13 @@ const getDriver = () => {
         .setChromeBinaryPath(chromium.path))
         .build();
 };
-function getRelevantGamesFromForebet(start, addr = "", noStop = false) {
+function getRelevantGamesFromForebet(start, addr = "", noStop = false, leagueView = false) {
     return __awaiter(this, void 0, void 0, function* () {
         const driver = getDriver();
         const ret = { stop: 0, total: 0, output: [] };
         const output = [];
         try {
-            const matchListReader = new MatchListReader_1.default(driver, start, noStop);
+            const matchListReader = new MatchListReader_1.default(driver, start, noStop, leagueView);
             yield matchListReader.openList(addr);
             yield matchListReader.consentToCookies();
             yield matchListReader.clickMore();

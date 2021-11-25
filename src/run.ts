@@ -35,11 +35,49 @@ const scrapeToday = async () => {
   writeFileSync(`today.json`, JSON.stringify(res.output));
 };
 
+const scrapeLeague = async () => {
+  const address = process.argv[4].replace(/\/results\/\d+-\d+/, "/results");
+  const league = process.argv[4]
+    .replace(/.*\/([^\/]+)\/([^\/]+)\/results\/.*/, "$1__$2")
+    .replace("-and", "")
+    .replace("-for-", "")
+    .replace("-tips-", "")
+    .replace("predictions", "")
+    .replace("football", "");
+  console.log(`SCRAPING a league's history: ${league}`);
+  const seasonsToMove = Number(process.argv[3]);
+  const seasonMatch = process.argv[2].match(/(\d+)-(\d+)/);
+  if (!seasonMatch || seasonMatch.length < 3) {
+    console.log("Anna lähtökausi muodossa 2020-2021");
+    return null;
+  }
+  let currentSeason = [Number(seasonMatch[1]) + 1, Number(seasonMatch[2]) + 1];
+  let output: matchOutput[] = [];
+  let seasonId = "";
+  for (let i = 0; i < Math.abs(seasonsToMove); i++) {
+    currentSeason = currentSeason.map((year) => year - 1);
+    seasonId = currentSeason.join("-");
+    console.log(`Scraping season ${seasonId}`);
+    const res = await getRelevantGamesFromForebet(
+      0,
+      `${address}/${seasonId}`,
+      true,
+      true
+    );
+    output = [...output, ...res.output];
+  }
+  writeFileSync(
+    `forebet_${league}_${seasonId}__${process.argv[2]}.json`,
+    JSON.stringify(output)
+  );
+};
+
 (async () => {
-  if (process.argv.length > 3) {
+  if (process.argv.length > 4) {
+    scrapeLeague();
+  } else if (process.argv.length > 3) {
     scrapeDays();
   } else {
     scrapeToday();
   }
 })();
-

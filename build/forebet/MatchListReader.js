@@ -12,10 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const selenium_webdriver_1 = require("selenium-webdriver");
 const moment = require("moment");
 class MatchListReader {
-    constructor(driver, start = 0, noStop = false) {
+    constructor(driver, start = 0, noStop = false, leagueView = false) {
         this.driver = driver;
         this.start = start;
         this.stop = start + 100;
+        this.leagueView = leagueView;
         if (noStop) {
             this.stop = 999999;
         }
@@ -69,18 +70,21 @@ class MatchListReader {
     listLinksAndDates() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("Listing all available matches");
-            const links = yield this.driver.findElements(selenium_webdriver_1.By.css(".tnmscn"));
+            const selector = this.leagueView ? ".stat_link" : ".tnmscn";
+            const links = yield this.driver.findElements(selenium_webdriver_1.By.css(selector));
             this.total = links.length;
             console.log(`found ${this.total}`);
             return yield Promise.all(links.map((link, idx) => __awaiter(this, void 0, void 0, function* () {
                 const parent = yield link.findElement(selenium_webdriver_1.By.xpath("./../.."));
                 console.log("parent ok");
-                const dateCont = yield parent.findElement(selenium_webdriver_1.By.css(".date_bah"));
+                const dateCont = this.leagueView
+                    ? yield parent.findElement(selenium_webdriver_1.By.xpath("preceding-sibling::*[1][self::tr]"))
+                    : yield parent.findElement(selenium_webdriver_1.By.css(".date_bah"));
                 console.log("datcont ok");
                 const time = yield dateCont.getText();
-                console.log("time ok");
+                console.log("time ok", time);
                 const href = yield link.getAttribute("href");
-                console.log("href ok");
+                console.log("href ok", href);
                 console.log(idx);
                 return { time, href };
             })));
