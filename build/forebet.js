@@ -72,7 +72,7 @@ function getRelevantGamesFromForebet(start, addr = "", noStop = false, leagueVie
             yield matchListReader.openList(addr);
             yield matchListReader.consentToCookies();
             yield matchListReader.clickMore();
-            yield matchListReader.compileLinkList();
+            yield matchListReader.compileLinkList(addr);
             let idx = 0;
             for (const link of matchListReader.getLinks()) {
                 idx++;

@@ -84,17 +84,13 @@ export default class MatchListReader {
     return await Promise.all(
       links.map(async (link: WebElement, idx): Promise<matchLink> => {
         const parent = await link.findElement(By.xpath("./../.."));
-        console.log("parent ok");
         const dateCont = this.leagueView
           ? await parent.findElement(
               By.xpath("preceding-sibling::*[1][self::tr]")
             )
           : await parent.findElement(By.css(".date_bah"));
-        console.log("datcont ok");
         const time = await dateCont.getText();
-        console.log("time ok", time);
         const href = await link.getAttribute("href");
-        console.log("href ok", href);
         console.log(idx);
         return { time, href };
       })
@@ -108,8 +104,20 @@ export default class MatchListReader {
     console.log(`${this.hrefs.length} matches to scrape`);
   }
 
-  async compileLinkList() {
-    const links = await this.listLinksAndDates();
+  async compileLinkList(addr = "") {
+    let links = await this.listLinksAndDates();
+    if (this.leagueView) {
+      while (true) {
+        await this.driver.get(`${addr}?start=${links.length}`);
+        console.log(`Total collected: ${links.length}`);
+        const newLinks = await this.listLinksAndDates();
+        links = [...links, ...newLinks];
+        if (!newLinks.length) {
+          console.log("No more pages for this season");
+          break;
+        }
+      }
+    }
     this.setHrefs(links);
   }
 

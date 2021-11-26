@@ -72,7 +72,7 @@ export async function getRelevantGamesFromForebet(
     await matchListReader.openList(addr);
     await matchListReader.consentToCookies();
     await matchListReader.clickMore();
-    await matchListReader.compileLinkList();
+    await matchListReader.compileLinkList(addr);
     let idx = 0;
     for (const link of matchListReader.getLinks()) {
       idx++;

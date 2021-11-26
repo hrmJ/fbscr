@@ -76,15 +76,11 @@ class MatchListReader {
             console.log(`found ${this.total}`);
             return yield Promise.all(links.map((link, idx) => __awaiter(this, void 0, void 0, function* () {
                 const parent = yield link.findElement(selenium_webdriver_1.By.xpath("./../.."));
-                console.log("parent ok");
                 const dateCont = this.leagueView
                     ? yield parent.findElement(selenium_webdriver_1.By.xpath("preceding-sibling::*[1][self::tr]"))
                     : yield parent.findElement(selenium_webdriver_1.By.css(".date_bah"));
-                console.log("datcont ok");
                 const time = yield dateCont.getText();
-                console.log("time ok", time);
                 const href = yield link.getAttribute("href");
-                console.log("href ok", href);
                 console.log(idx);
                 return { time, href };
             })));
@@ -98,9 +94,21 @@ class MatchListReader {
             console.log(`${this.hrefs.length} matches to scrape`);
         });
     }
-    compileLinkList() {
+    compileLinkList(addr = "") {
         return __awaiter(this, void 0, void 0, function* () {
-            const links = yield this.listLinksAndDates();
+            let links = yield this.listLinksAndDates();
+            if (this.leagueView) {
+                while (true) {
+                    yield this.driver.get(`${addr}?start=${links.length}`);
+                    console.log(`Total collected: ${links.length}`);
+                    const newLinks = yield this.listLinksAndDates();
+                    links = [...links, ...newLinks];
+                    if (!newLinks.length) {
+                        console.log("No more pages for this season");
+                        break;
+                    }
+                }
+            }
             this.setHrefs(links);
         });
     }
