@@ -10,6 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const selenium_webdriver_1 = require("selenium-webdriver");
+function sleep(ms) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    });
+}
+exports.sleep = sleep;
 class DetailScraper {
     constructor(link, driver, idx) {
         this.link = "";
@@ -94,6 +100,18 @@ class DetailScraper {
         return __awaiter(this, void 0, void 0, function* () {
             this.data.homeTeam = yield this.getElementText(".homeTeam");
             this.data.awayTeam = yield this.getElementText(".awayTeam");
+            let i = 0;
+            while (!this.data.homeTeam) {
+                i++;
+                yield this.loadPage();
+                console.log("Re-trying getting teams...");
+                this.data.homeTeam = yield this.getElementText(".homeTeam");
+                this.data.awayTeam = yield this.getElementText(".awayTeam");
+                if (i > 10) {
+                    console.log("No home team!");
+                    break;
+                }
+            }
         });
     }
     get1x2Props() {
@@ -123,11 +141,17 @@ class DetailScraper {
     get1X2() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("Getting 1x2 data");
-            if (!(yield this.openTab("#1x2_t_butt"))) {
-                return null;
+            let i = 0;
+            while (!(yield this.openTab("#1x2_t_butt"))) {
+                yield sleep(100);
+                console.log(`unable to click 1x2_t_tab: ${this.link}`);
+                yield this.loadPage();
+                i++;
+                if (i > 10)
+                    return null;
             }
-            yield this.getLeagueAndCountry();
             yield this.getTeams();
+            yield this.getLeagueAndCountry();
             yield this.get1x2Props();
             this.data.forebet = yield this.getElementText(".tr_0 .forepr");
             this.data.forebetEventTime = yield this.getElementText(".date_bah");

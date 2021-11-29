@@ -28,6 +28,10 @@ export type matchOutput = {
   league: string;
 };
 
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default class DetailScraper {
   private link: string = "";
 
@@ -114,6 +118,18 @@ export default class DetailScraper {
   async getTeams() {
     this.data.homeTeam = await this.getElementText(".homeTeam");
     this.data.awayTeam = await this.getElementText(".awayTeam");
+    let i = 0;
+    while (!this.data.homeTeam) {
+      i++;
+      await this.loadPage();
+      console.log("Re-trying getting teams...");
+      this.data.homeTeam = await this.getElementText(".homeTeam");
+      this.data.awayTeam = await this.getElementText(".awayTeam");
+      if (i > 10) {
+        console.log("No home team!");
+        break;
+      }
+    }
   }
 
   async get1x2Props() {
@@ -147,11 +163,16 @@ export default class DetailScraper {
 
   async get1X2() {
     console.log("Getting 1x2 data");
-    if (!(await this.openTab("#1x2_t_butt"))) {
-      return null;
+    let i = 0;
+    while (!(await this.openTab("#1x2_t_butt"))) {
+      await sleep(100);
+      console.log(`unable to click 1x2_t_tab: ${this.link}`);
+      await this.loadPage();
+      i++;
+      if (i > 10) return null;
     }
-    await this.getLeagueAndCountry();
     await this.getTeams();
+    await this.getLeagueAndCountry();
     await this.get1x2Props();
     this.data.forebet = await this.getElementText(".tr_0 .forepr");
     this.data.forebetEventTime = await this.getElementText(".date_bah");
