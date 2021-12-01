@@ -8,10 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const forebet_1 = require("./forebet");
 const fs_1 = require("fs");
 const moment = require("moment");
+const querystring = __importStar(require("querystring"));
+const request_1 = __importDefault(require("request"));
+const dotenv_1 = require("dotenv");
+dotenv_1.config();
 const scrapeDays = () => __awaiter(void 0, void 0, void 0, function* () {
     const startDate = process.argv[2];
     const daysToMove = Number(process.argv[3]);
@@ -63,15 +77,28 @@ const scrapeLeague = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     fs_1.writeFileSync(`forebet_${league}_${seasonId}__${process.argv[2]}.json`, JSON.stringify(output));
 });
+function notify() {
+    request_1.default.post({
+        url: "https://api.simplepush.io/send",
+        body: querystring.stringify({
+            key: process.env.KEY,
+            title: "HUOM!",
+            msg: "Skreippi valmis!",
+        }),
+    }, function (a, b, c) {
+        console.log(a, b);
+    });
+}
 (() => __awaiter(void 0, void 0, void 0, function* () {
     if (process.argv.length > 4) {
-        scrapeLeague();
+        yield scrapeLeague();
     }
     else if (process.argv.length > 3) {
-        scrapeDays();
+        yield scrapeDays();
     }
     else {
-        scrapeToday();
+        yield scrapeToday();
     }
+    notify();
 }))();
 //# sourceMappingURL=run.js.map

@@ -3,6 +3,11 @@ import { writeFileSync } from "fs";
 import { matchOutput } from "./forebet/DetailScraper";
 import { Moment } from "moment";
 const moment = require("moment");
+import * as querystring from "querystring";
+import request from "request";
+import { config } from "dotenv";
+
+config();
 
 const scrapeDays = async () => {
   const startDate = process.argv[2];
@@ -72,12 +77,29 @@ const scrapeLeague = async () => {
   );
 };
 
+function notify() {
+  request.post(
+    {
+      url: "https://api.simplepush.io/send",
+      body: querystring.stringify({
+        key: process.env.KEY,
+        title: "HUOM!",
+        msg: "Skreippi valmis!",
+      }),
+    },
+    function (a: any, b: any, c: any) {
+      console.log(a, b);
+    }
+  );
+}
+
 (async () => {
   if (process.argv.length > 4) {
-    scrapeLeague();
+    await scrapeLeague();
   } else if (process.argv.length > 3) {
-    scrapeDays();
+    await scrapeDays();
   } else {
-    scrapeToday();
+    await scrapeToday();
   }
+  notify();
 })();

@@ -23,6 +23,7 @@
     "cheerio": "^1.0.0-rc.3",
     "chromedriver": "^78.0.1",
     "chromium-version": "^78.0.0",
+    "dotenv": "^10.0.0",
     "fs-extra": "^8.1.0",
     "lodash": "4.17.15",
     "moment": "^2.29.1",
