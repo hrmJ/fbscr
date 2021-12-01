@@ -87,9 +87,7 @@ function notify() {
         msg: "Skreippi valmis!",
       }),
     },
-    function (a: any, b: any, c: any) {
-      console.log(a, b);
-    }
+    function (a: any, b: any, c: any) {}
   );
 }
 

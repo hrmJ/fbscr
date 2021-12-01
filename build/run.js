@@ -85,9 +85,7 @@ function notify() {
             title: "HUOM!",
             msg: "Skreippi valmis!",
         }),
-    }, function (a, b, c) {
-        console.log(a, b);
-    });
+    }, function (a, b, c) { });
 }
 (() => __awaiter(void 0, void 0, void 0, function* () {
     if (process.argv.length > 4) {
