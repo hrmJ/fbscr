@@ -35,11 +35,12 @@ export const scrapeCols = [
 ];
 
 const getDriver = (): ThenableWebDriver => {
+  const isVisual = process.argv.some((arg) => arg === "visual");
+  const options = isVisual ? new Options() : new Options().headless();
   return new Builder()
     .forBrowser("chrome")
     .setChromeOptions(
-      new Options()
-        .headless()
+      options
         .addArguments("--no-sandbox")
         .addArguments("--disable-dev-shm-usage")
         .setChromeBinaryPath(chromium.path)
