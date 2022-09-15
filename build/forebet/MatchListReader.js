@@ -29,7 +29,7 @@ class MatchListReader {
     }
     consentToCookies() {
         return __awaiter(this, void 0, void 0, function* () {
-            const consentLinkLocator = selenium_webdriver_1.By.css("#close-cc-bar");
+            const consentLinkLocator = selenium_webdriver_1.By.css(".fc-cta-consent");
             try {
                 console.log("Clicking OK to cookies");
                 yield this.driver.wait(selenium_webdriver_1.until.elementLocated(consentLinkLocator));

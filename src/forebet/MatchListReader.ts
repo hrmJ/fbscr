@@ -42,7 +42,7 @@ export default class MatchListReader {
   }
 
   async consentToCookies() {
-    const consentLinkLocator = By.css("#close-cc-bar");
+    const consentLinkLocator = By.css(".fc-cta-consent");
     try {
       console.log("Clicking OK to cookies");
       await this.driver.wait(until.elementLocated(consentLinkLocator));
