@@ -56,7 +56,7 @@ const getDriver = () => {
     const isVisual = process.argv.some((arg) => arg === "visual");
     const options = isVisual ? new chrome_1.Options() : new chrome_1.Options().headless();
     return new selenium_webdriver_1.Builder()
-        .forBrowser("chrome")
+        .forBrowser("firefox")
         .setChromeOptions(options
         .addArguments("--no-sandbox")
         .addArguments("--disable-dev-shm-usage")

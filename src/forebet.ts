@@ -1,8 +1,8 @@
 //import puppeteer, { ElementHandle, Page } from "puppeteer";
 import { Builder, ThenableWebDriver } from "selenium-webdriver";
-import { Options } from "selenium-webdriver/chrome";
+import { Options } from "selenium-webdriver/firefox";
+("selenium-webdriver/firefox");
 import "chromedriver";
-import * as chromium from "chromium-version";
 import MatchListReader from "./forebet/MatchListReader";
 import DetailScraper, { matchOutput } from "./forebet/DetailScraper";
 
@@ -38,12 +38,10 @@ const getDriver = (): ThenableWebDriver => {
   const isVisual = process.argv.some((arg) => arg === "visual");
   const options = isVisual ? new Options() : new Options().headless();
   return new Builder()
-    .forBrowser("chrome")
-    .setChromeOptions(
-      options
-        .addArguments("--no-sandbox")
-        .addArguments("--disable-dev-shm-usage")
-        .setChromeBinaryPath(chromium.path)
+    .forBrowser("firefox")
+    .setFirefoxOptions(
+      options.addArguments("--headless").addArguments("--disable-dev-shm-usage")
+      // .setChromeBinaryPath(chromium.path)
     )
     .build();
 };
