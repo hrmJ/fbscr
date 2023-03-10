@@ -1,10 +1,11 @@
 //import puppeteer, { ElementHandle, Page } from "puppeteer";
 import { Builder, ThenableWebDriver } from "selenium-webdriver";
-import { Options } from "selenium-webdriver/chrome";
+import { Options } from "selenium-webdriver/firefox";
+("selenium-webdriver/firefox");
 import "chromedriver";
-import * as chromium from "chromium-version";
 import MatchListReader from "./forebet/MatchListReader";
 import DetailScraper, { matchOutput } from "./forebet/DetailScraper";
+import { chromium } from "playwright";
 
 export const scrapeCols = [
   { label: "Country", value: "country" },
@@ -34,18 +35,17 @@ export const scrapeCols = [
   { label: "Uncertain?", value: "uncertain" },
 ];
 
-const getDriver = (): ThenableWebDriver => {
-  const isVisual = process.argv.some((arg) => arg === "visual");
-  const options = isVisual ? new Options() : new Options().headless();
-  return new Builder()
-    .forBrowser("chrome")
-    .setChromeOptions(
-      options
-        .addArguments("--no-sandbox")
-        .addArguments("--disable-dev-shm-usage")
-        .setChromeBinaryPath(chromium.path)
-    )
-    .build();
+const getDriver = async () => {
+  const headless = !process.argv.some((arg) => arg === "visual");
+  return await chromium.launch({ headless });
+  //const options = isVisual ? new Options() : new Options().headless();
+  //return new Builder()
+  //  .forBrowser("firefox")
+  //  .setFirefoxOptions(
+  //    options.addArguments("--headless").addArguments("--disable-dev-shm-usage")
+  //    // .setChromeBinaryPath(chromium.path)
+  //  )
+  //  .build();
 };
 
 type relevantGamesOutput = {
@@ -60,7 +60,8 @@ export async function getRelevantGamesFromForebet(
   noStop: boolean = false,
   leagueView = false
 ): Promise<relevantGamesOutput> {
-  const driver = getDriver();
+  console.log("here");
+  const driver = await getDriver();
   const ret: relevantGamesOutput = { stop: 0, total: 0, output: [] };
   const output: matchOutput[] = [];
   try {
@@ -70,26 +71,27 @@ export async function getRelevantGamesFromForebet(
       noStop,
       leagueView
     );
-    await matchListReader.openList(addr);
-    await matchListReader.consentToCookies();
-    await matchListReader.clickMore();
-    await matchListReader.compileLinkList(addr);
-    let idx = 0;
-    for (const link of matchListReader.getLinks()) {
-      idx++;
-      const scraper = new DetailScraper(link, driver, idx);
-      await scraper.loadPage();
-      await scraper.get1X2();
-      await scraper.getUnderOver();
-      await scraper.getBts();
-      output.push(scraper.getData());
-    }
-    ret.stop = matchListReader.getStop();
-    ret.total = matchListReader.getTotal();
-    ret.output = output;
+    //await matchListReader.openList(addr);
+    //await matchListReader.consentToCookies();
+    //await matchListReader.clickMore();
+    //await matchListReader.compileLinkList(addr);
+    //let idx = 0;
+    //for (const link of matchListReader.getLinks()) {
+    //  idx++;
+    //  const scraper = new DetailScraper(link, driver, idx);
+    //  await scraper.loadPage();
+    //  await scraper.get1X2();
+    //  await scraper.getUnderOver();
+    //  await scraper.getBts();
+    //  output.push(scraper.getData());
+    //}
+    //ret.stop = matchListReader.getStop();
+    //ret.total = matchListReader.getTotal();
+    //ret.output = output;
   } finally {
     try {
-      await driver.quit();
+      await driver.close();
+      //await driver.quit();
     } catch (err) {}
   }
   return ret;
