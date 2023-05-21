@@ -1,11 +1,8 @@
-//import puppeteer, { ElementHandle, Page } from "puppeteer";
-import { Builder, ThenableWebDriver } from "selenium-webdriver";
-import { Options } from "selenium-webdriver/firefox";
-("selenium-webdriver/firefox");
+//
 import "chromedriver";
 import MatchListReader from "./forebet/MatchListReader";
 import DetailScraper, { matchOutput } from "./forebet/DetailScraper";
-import { chromium, firefox } from "playwright";
+import { firefox } from "playwright";
 
 export const scrapeCols = [
   { label: "Country", value: "country" },
@@ -75,23 +72,22 @@ export async function getRelevantGamesFromForebet(
     await matchListReader.consentToCookies();
     await matchListReader.clickMore();
     await matchListReader.compileLinkList(addr);
-    //let idx = 0;
-    //for (const link of matchListReader.getLinks()) {
-    //  idx++;
-    //  const scraper = new DetailScraper(link, driver, idx);
-    //  await scraper.loadPage();
-    //  await scraper.get1X2();
-    //  await scraper.getUnderOver();
-    //  await scraper.getBts();
-    //  output.push(scraper.getData());
-    //}
-    //ret.stop = matchListReader.getStop();
-    //ret.total = matchListReader.getTotal();
-    //ret.output = output;
+    let idx = 0;
+    for (const link of matchListReader.getLinks()) {
+      idx++;
+      const scraper = new DetailScraper(link, browser, idx);
+      await scraper.loadPage();
+      await scraper.get1X2();
+      await scraper.getUnderOver();
+      await scraper.getBts();
+      output.push(scraper.getData());
+    }
+    ret.stop = matchListReader.getStop();
+    ret.total = matchListReader.getTotal();
+    ret.output = output;
   } finally {
     try {
       await browser.close();
-      //await driver.quit();
     } catch (err) {}
   }
   return ret;

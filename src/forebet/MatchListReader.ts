@@ -96,19 +96,19 @@ export default class MatchListReader {
 
   async compileLinkList(addr = "") {
     let links = await this.listLinksAndDates();
-    //if (this.leagueView) {
-    //  while (true) {
-    //    await this.driver.get(`${addr}?start=${links.length}`);
-    //    console.log(`Total collected: ${links.length}`);
-    //    const newLinks = await this.listLinksAndDates();
-    //    links = [...links, ...newLinks];
-    //    if (!newLinks.length) {
-    //      console.log("No more pages for this season");
-    //      break;
-    //    }
-    //  }
-    //}
-    //this.setHrefs(links);
+    if (this.leagueView) {
+      while (true) {
+        await this.page.goto(`${addr}?start=${links.length}`);
+        console.log(`Total collected: ${links.length}`);
+        const newLinks = await this.listLinksAndDates();
+        links = [...links, ...newLinks];
+        if (!newLinks.length) {
+          console.log("No more pages for this season");
+          break;
+        }
+      }
+    }
+    this.setHrefs(links);
   }
 
   getLinks(): string[] {

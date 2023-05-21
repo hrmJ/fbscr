@@ -1,4 +1,5 @@
-import { ThenableWebDriver, By } from "selenium-webdriver";
+//
+import { Browser, Page } from "playwright";
 
 export type matchOutput = {
   homeTeam: string;
@@ -63,11 +64,13 @@ export default class DetailScraper {
     league: "",
   };
 
-  private driver: ThenableWebDriver;
+  private driver: Browser;
+
+  private page: Page;
 
   private idx: number;
 
-  constructor(link: string, driver: ThenableWebDriver, idx: number) {
+  constructor(link: string, driver: Browser, idx: number) {
     this.link = link;
     this.driver = driver;
     this.idx = idx;
@@ -75,14 +78,15 @@ export default class DetailScraper {
 
   async loadPage() {
     console.log(`Loading detail page ${this.idx}`);
-    await this.driver.get(this.link);
+    this.page = await this.driver.newPage();
+    await this.page.goto(this.link);
   }
 
   private async openTab(selector: string): Promise<boolean> {
     try {
       const link = !selector.match(/#\d/)
-        ? await this.driver.findElement(By.css(selector))
-        : await this.driver.findElement(By.id(selector.replace("#", "")));
+        ? await this.page.waitForSelector(selector)
+        : await this.page.waitForSelector(selector.replace("#", ""));
       await link.click();
       return true;
     } catch (err) {
@@ -92,7 +96,7 @@ export default class DetailScraper {
   }
 
   async getLeagueAndCountry() {
-    const div = await this.driver.findElement(By.css(".shortagDiv img"));
+    const div = await this.page.waitForSelector(".shortagDiv img");
     let raw = await div.getAttribute("onclick");
     const re = new RegExp("'([^']+)'", "g");
     if (raw) {
@@ -108,8 +112,8 @@ export default class DetailScraper {
 
   async getElementText(selector: string) {
     try {
-      const el = await this.driver.findElement(By.css(selector));
-      return await el.getText();
+      const el = await this.page.waitForSelector(selector);
+      return (await el?.textContent()) ?? "";
     } catch (err) {
       return "";
     }
@@ -150,8 +154,8 @@ export default class DetailScraper {
       X = "",
       A = "";
     try {
-      const oddsCont = await this.driver.findElement(By.css(".tr_0 .haodd"));
-      const oddsText = await oddsCont.getAttribute("innerText");
+      const oddsCont = await this.page.waitForSelector(".tr_0 .haodd");
+      const oddsText = (await oddsCont.getAttribute("innerText")) ?? "";
       [H, X, A] = oddsText
         .split("\n")
         .filter((t: string) => t && !["1", "-1"].includes(t));
