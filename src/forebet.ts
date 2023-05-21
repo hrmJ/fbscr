@@ -36,8 +36,9 @@ export const scrapeCols = [
 ];
 
 const getDriver = async () => {
-  const headless = !process.argv.some((arg) => arg === "visual");
-  return await chromium.launch({ headless });
+  const visual = process.argv.some((arg) => arg === "visual");
+  console.log({ visual, argv: process.argv });
+  return await chromium.launch({ headless: !visual });
   //const options = isVisual ? new Options() : new Options().headless();
   //return new Builder()
   //  .forBrowser("firefox")
@@ -60,19 +61,19 @@ export async function getRelevantGamesFromForebet(
   noStop: boolean = false,
   leagueView = false
 ): Promise<relevantGamesOutput> {
-  console.log("here");
-  const driver = await getDriver();
+  const browser = await getDriver();
+  const context = await browser.newContext()
   const ret: relevantGamesOutput = { stop: 0, total: 0, output: [] };
   const output: matchOutput[] = [];
   try {
     const matchListReader = new MatchListReader(
-      driver,
+      context,
       start,
       noStop,
       leagueView
     );
-    //await matchListReader.openList(addr);
-    //await matchListReader.consentToCookies();
+    await matchListReader.openList(addr);
+    await matchListReader.consentToCookies();
     //await matchListReader.clickMore();
     //await matchListReader.compileLinkList(addr);
     //let idx = 0;
@@ -90,7 +91,7 @@ export async function getRelevantGamesFromForebet(
     //ret.output = output;
   } finally {
     try {
-      await driver.close();
+      await browser.close();
       //await driver.quit();
     } catch (err) {}
   }

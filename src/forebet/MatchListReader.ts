@@ -1,4 +1,5 @@
 import { ThenableWebDriver, By, until, WebElement } from "selenium-webdriver";
+import { Browser, BrowserContext, Page } from "playwright";
 const moment = require("moment");
 
 type matchLink = {
@@ -7,7 +8,7 @@ type matchLink = {
 };
 
 export default class MatchListReader {
-  private driver: ThenableWebDriver;
+  private driver: BrowserContext;
 
   private hrefs: string[];
 
@@ -19,8 +20,10 @@ export default class MatchListReader {
 
   private leagueView: boolean;
 
+  private page: Page;
+
   constructor(
-    driver: ThenableWebDriver,
+    driver: BrowserContext,
     start: number = 0,
     noStop: boolean = false,
     leagueView: boolean = false
@@ -35,7 +38,8 @@ export default class MatchListReader {
   }
 
   async openList(addr: string = "") {
-    await this.driver.get(
+    this.page = await this.driver.newPage();
+    await this.page.goto(
       addr ||
         "https://www.forebet.com/en/football-tips-and-predictions-for-today"
     );

@@ -7,7 +7,7 @@
     "server": "build/*.js"
   },
   "scripts": {
-    "scrape": "vite-node src/run.ts",
+    "scrape": "vite-node src/run.ts --",
     "start": "run-p watch-server watch-tsc",
     "watch-server": "npm-watch server",
     "watch-tsc": "tsc --watch",
