@@ -1,5 +1,8 @@
 //
-import { Browser, Page } from "playwright";
+import { Page } from "playwright";
+import { Context } from "vm";
+
+const forebetBaseUrl = "https://www.forebet.com";
 
 export type matchOutput = {
   homeTeam: string;
@@ -64,32 +67,38 @@ export default class DetailScraper {
     league: "",
   };
 
-  private driver: Browser;
+  private driver: Context;
 
   private page: Page;
 
   private idx: number;
 
-  constructor(link: string, driver: Browser, idx: number) {
+  constructor(link: string, page: Page, idx: number) {
     this.link = link;
-    this.driver = driver;
+    this.page = page;
     this.idx = idx;
   }
 
   async loadPage() {
     console.log(`Loading detail page ${this.idx}`);
-    this.page = await this.driver.newPage();
-    await this.page.goto(this.link);
+    console.log(`${forebetBaseUrl}/${this.link}`);
+    await this.page.goto(`${forebetBaseUrl}/${this.link}`);
+  }
+
+  async openPage() {
+    await this.page.close();
+  }
+
+  async closePage() {
+    await this.page.close();
   }
 
   private async openTab(selector: string): Promise<boolean> {
     try {
-      const link = !selector.match(/#\d/)
-        ? await this.page.waitForSelector(selector)
-        : await this.page.waitForSelector(selector.replace("#", ""));
-      await link.click();
+      await this.page.click(selector);
       return true;
     } catch (err) {
+      console.log({ err });
       console.log(`unable to click ${selector}`);
     }
     return false;
@@ -115,6 +124,7 @@ export default class DetailScraper {
       const el = await this.page.waitForSelector(selector);
       return (await el?.textContent()) ?? "";
     } catch (err) {
+      console.log({ err }, "unable to extract text");
       return "";
     }
   }
@@ -154,12 +164,13 @@ export default class DetailScraper {
       X = "",
       A = "";
     try {
-      const oddsCont = await this.page.waitForSelector(".tr_0 .haodd");
-      const oddsText = (await oddsCont.getAttribute("innerText")) ?? "";
+      const oddsCont = await this.page.$(".tr_0 .haodd");
+      const oddsText = (await oddsCont?.getAttribute("innerText")) ?? "";
       [H, X, A] = oddsText
         .split("\n")
         .filter((t: string) => t && !["1", "-1"].includes(t));
     } catch (err) {
+      console.log({ err });
       console.log("unable to get odds");
     }
     this.data = { ...this.data, tipOdd, H, X, A };
@@ -167,14 +178,7 @@ export default class DetailScraper {
 
   async get1X2() {
     console.log("Getting 1x2 data");
-    let i = 0;
-    while (!(await this.openTab("#1x2_t_butt"))) {
-      await sleep(100);
-      console.log(`unable to click 1x2_t_tab: ${this.link}`);
-      await this.loadPage();
-      i++;
-      if (i > 10) return null;
-    }
+    await this.openTab("#\\31x2_t_butt");
     await this.getTeams();
     await this.getLeagueAndCountry();
     await this.get1x2Props();

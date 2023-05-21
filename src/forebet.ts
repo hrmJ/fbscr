@@ -35,14 +35,6 @@ export const scrapeCols = [
 const getDriver = async () => {
   const visual = process.argv.some((arg) => arg === "visual");
   return await firefox.launch({ headless: !visual });
-  //const options = isVisual ? new Options() : new Options().headless();
-  //return new Builder()
-  //  .forBrowser("firefox")
-  //  .setFirefoxOptions(
-  //    options.addArguments("--headless").addArguments("--disable-dev-shm-usage")
-  //    // .setChromeBinaryPath(chromium.path)
-  //  )
-  //  .build();
 };
 
 type relevantGamesOutput = {
@@ -73,9 +65,10 @@ export async function getRelevantGamesFromForebet(
     await matchListReader.clickMore();
     await matchListReader.compileLinkList(addr);
     let idx = 0;
+    const page = matchListReader.getPage();
     for (const link of matchListReader.getLinks()) {
       idx++;
-      const scraper = new DetailScraper(link, browser, idx);
+      const scraper = new DetailScraper(link, page, idx);
       await scraper.loadPage();
       await scraper.get1X2();
       await scraper.getUnderOver();

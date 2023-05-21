@@ -36,8 +36,8 @@ const scrapeDays = async () => {
 const scrapeToday = async () => {
   const address = `https://www.forebet.com/en/football-tips-and-predictions-for-today`;
   const res = await getRelevantGamesFromForebet(0, address, true);
-  //const today = moment().format("Y-MM-DD");
-  // writeFileSync(`today.json`, JSON.stringify(res.output));
+  // const today = moment().format("Y-MM-DD");
+  writeFileSync(`today.json`, JSON.stringify(res.output));
 };
 
 const scrapeLeague = async () => {

@@ -1,6 +1,5 @@
-import { ThenableWebDriver, By, until, WebElement } from "selenium-webdriver";
-import { Browser, BrowserContext, Page } from "playwright";
-const moment = require("moment");
+//
+import { BrowserContext, Page } from "playwright";
 
 type matchLink = {
   href: string;
@@ -35,6 +34,10 @@ export default class MatchListReader {
     if (noStop) {
       this.stop = 999999;
     }
+  }
+
+  getPage() {
+    return this.page;
   }
 
   async openList(addr: string = "") {
