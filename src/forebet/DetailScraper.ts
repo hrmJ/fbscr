@@ -121,7 +121,7 @@ export default class DetailScraper {
 
   async getElementText(selector: string) {
     try {
-      const el = await this.page.waitForSelector(selector);
+      const el = await this.page.$(selector);
       return (await el?.textContent()) ?? "";
     } catch (err) {
       console.log({ err }, "unable to extract text");
