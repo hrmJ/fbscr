@@ -46,11 +46,10 @@ export default class MatchListReader {
   }
 
   async consentToCookies() {
-    const consentLinkLocator = By.css(".fc-cta-consent");
+    const consentLinkLocator = ".fc-cta-consent";
     try {
       console.log("Clicking OK to cookies");
-      await this.driver.wait(until.elementLocated(consentLinkLocator));
-      const link = await this.driver.findElement(consentLinkLocator);
+      const link = await this.page.waitForSelector(consentLinkLocator);
       await link.click();
       console.log("clicked ok");
     } catch (error) {
@@ -59,21 +58,11 @@ export default class MatchListReader {
   }
 
   async clickMore() {
-    const moreLinkLocator = By.css("#mrows span");
+    const moreLinkLocator = "#mrows span";
     try {
-      await this.driver.wait(until.elementLocated(moreLinkLocator), 7000);
-    } catch (err) {}
-    console.log("searched for morelink");
-    try {
-      const moreLink = await this.driver.findElement(moreLinkLocator);
-      try {
-        await this.driver.wait(until.elementLocated(moreLinkLocator), 7000);
-      } catch (err) {}
-      const actions = this.driver.actions({ async: true });
-      await actions.move({ origin: moreLink }).perform();
+      const moreLink = await this.page.waitForSelector(moreLinkLocator);
       await moreLink.click();
-      console.log("clicked");
-      await this.driver.sleep(4000);
+      console.log("clicked 'more'... ");
     } catch (err) {
       console.log("no morelink found");
     }
@@ -82,20 +71,17 @@ export default class MatchListReader {
   private async listLinksAndDates(): Promise<matchLink[]> {
     console.log("Listing all available matches");
     const selector = this.leagueView ? ".stat_link" : ".tnmscn";
-    const links = await this.driver.findElements(By.css(selector));
+    await this.page.waitForSelector(selector);
+    const links = await this.page.$$(selector);
     this.total = links.length;
-    console.log(`found ${this.total}`);
     return await Promise.all(
-      links.map(async (link: WebElement, idx): Promise<matchLink> => {
-        const parent = await link.findElement(By.xpath("./../.."));
+      links.map(async (link, idx): Promise<matchLink> => {
+        const parent = await link?.$("xpath=./../..");
         const dateCont = this.leagueView
-          ? await parent.findElement(
-              By.xpath("preceding-sibling::*[1][self::tr]")
-            )
-          : await parent.findElement(By.css(".date_bah"));
-        const time = await dateCont.getText();
-        const href = await link.getAttribute("href");
-        console.log(idx);
+          ? await parent?.$("xpath=preceding-sibling::*[1][self::tr]")
+          : await parent?.$(".date_bah");
+        const time = (await dateCont?.textContent()) ?? "";
+        const href = (await link.getAttribute("href")) ?? "";
         return { time, href };
       })
     );
@@ -110,19 +96,19 @@ export default class MatchListReader {
 
   async compileLinkList(addr = "") {
     let links = await this.listLinksAndDates();
-    if (this.leagueView) {
-      while (true) {
-        await this.driver.get(`${addr}?start=${links.length}`);
-        console.log(`Total collected: ${links.length}`);
-        const newLinks = await this.listLinksAndDates();
-        links = [...links, ...newLinks];
-        if (!newLinks.length) {
-          console.log("No more pages for this season");
-          break;
-        }
-      }
-    }
-    this.setHrefs(links);
+    //if (this.leagueView) {
+    //  while (true) {
+    //    await this.driver.get(`${addr}?start=${links.length}`);
+    //    console.log(`Total collected: ${links.length}`);
+    //    const newLinks = await this.listLinksAndDates();
+    //    links = [...links, ...newLinks];
+    //    if (!newLinks.length) {
+    //      console.log("No more pages for this season");
+    //      break;
+    //    }
+    //  }
+    //}
+    //this.setHrefs(links);
   }
 
   getLinks(): string[] {

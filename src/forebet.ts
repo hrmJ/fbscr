@@ -5,7 +5,7 @@ import { Options } from "selenium-webdriver/firefox";
 import "chromedriver";
 import MatchListReader from "./forebet/MatchListReader";
 import DetailScraper, { matchOutput } from "./forebet/DetailScraper";
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 
 export const scrapeCols = [
   { label: "Country", value: "country" },
@@ -37,8 +37,7 @@ export const scrapeCols = [
 
 const getDriver = async () => {
   const visual = process.argv.some((arg) => arg === "visual");
-  console.log({ visual, argv: process.argv });
-  return await chromium.launch({ headless: !visual });
+  return await firefox.launch({ headless: !visual });
   //const options = isVisual ? new Options() : new Options().headless();
   //return new Builder()
   //  .forBrowser("firefox")
@@ -62,7 +61,7 @@ export async function getRelevantGamesFromForebet(
   leagueView = false
 ): Promise<relevantGamesOutput> {
   const browser = await getDriver();
-  const context = await browser.newContext()
+  const context = await browser.newContext();
   const ret: relevantGamesOutput = { stop: 0, total: 0, output: [] };
   const output: matchOutput[] = [];
   try {
@@ -74,8 +73,8 @@ export async function getRelevantGamesFromForebet(
     );
     await matchListReader.openList(addr);
     await matchListReader.consentToCookies();
-    //await matchListReader.clickMore();
-    //await matchListReader.compileLinkList(addr);
+    await matchListReader.clickMore();
+    await matchListReader.compileLinkList(addr);
     //let idx = 0;
     //for (const link of matchListReader.getLinks()) {
     //  idx++;
