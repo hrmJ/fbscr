@@ -165,7 +165,7 @@ export default class DetailScraper {
       A = "";
     try {
       const oddsCont = await this.page.$(".tr_0 .haodd");
-      const oddsText = (await oddsCont?.getAttribute("innerText")) ?? "";
+      const oddsText = (await oddsCont?.textContent()) ?? "";
       [H, X, A] = oddsText
         .split("\n")
         .filter((t: string) => t && !["1", "-1"].includes(t));
