@@ -6,7 +6,9 @@ Example: scrape today
 
 Example: scrape from a date backwards
 
-`node build/run.js 2021-11-5 5`
+`node build/run.js 2021-11-5 " -5"`
+
+Note: need to use quotation marks and have a space before minus when moving backwards
 
 Example: scrape a league's history
 
